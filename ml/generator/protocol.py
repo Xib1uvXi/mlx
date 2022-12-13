@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Optional, Protocol
 import myloginpath
 from datetime import datetime
@@ -19,16 +20,34 @@ class Generator(Protocol):
         ...
 
 
+@dataclass
+class GeneratorSetting:
+    symbol: str = "btcusdt"
+    interval: str = "1h"
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+
+    def tables(self) -> str:
+        return f"bars_{self.symbol}_{self.interval}"
+
+    def database(self) -> str:
+        # TODO use config
+        return "binance_data"
+
+
 class BaseGenerator(ABC):
-    def __init__(self) -> None:
+    def __init__(self, setting: GeneratorSetting = GeneratorSetting()) -> None:
         self.dbconf = myloginpath.parse("client")
+        self.setting = setting
+
+        self.ohlcv = self.load_db(self.setting.database(), self.setting.tables(), self.setting.start, self.setting.end)
 
     def load_db(
         self, database: str, tables: str, start: Optional[datetime] = None, end: Optional[datetime] = None
     ) -> pd.DataFrame:
         conn = f"mysql://{self.dbconf['user']}:{self.dbconf['password']}@{self.dbconf['host']}/{database}"
 
-        cache_file = os.path.join(os.getenv("MXL_LD_CACHE_DIR", f"/tmp"), f"{database}_{tables}.feather")
+        cache_file = os.path.join(os.getenv("MXL_LD_CACHE_DIR", f"/tmp"), f"{database}_{tables}_{start}_{end}.feather")
         if os.path.exists(cache_file):
             return pd.read_feather(cache_file)
 

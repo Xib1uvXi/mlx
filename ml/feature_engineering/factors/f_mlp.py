@@ -13,7 +13,7 @@ class MADSetting:
 
 
 class MAD(FactorInterface):
-    def __init__(self, setting: MADSetting):
+    def __init__(self, setting: MADSetting = MADSetting()):
         self.setting = setting
         super().__init__(id=f"MAD_f{self.setting.fast}_s{self.setting.slow}")
 
@@ -35,7 +35,7 @@ class BLGSetting:
 
 
 class BLG(FactorInterface):
-    def __init__(self, setting: BLGSetting):
+    def __init__(self, setting: BLGSetting = BLGSetting()):
         self.setting = setting
         super().__init__(id=f"BLG_{self.setting.period}")
 
@@ -56,7 +56,7 @@ class UUPSetting:
 
 
 class UUP(FactorInterface):
-    def __init__(self, setting: UUPSetting):
+    def __init__(self, setting: UUPSetting = UUPSetting()):
         self.setting = setting
         super().__init__(id=f"UUP_{self.setting.period}")
 

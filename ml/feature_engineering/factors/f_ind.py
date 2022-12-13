@@ -11,7 +11,7 @@ class RSISetting:
 
 
 class RSI(FactorInterface):
-    def __init__(self, setting: RSISetting):
+    def __init__(self, setting: RSISetting = RSISetting()):
         self.setting = setting
         super().__init__(id=f"RSI_{self.setting.period}")
 
@@ -24,26 +24,11 @@ class RSI(FactorInterface):
         return df
 
 
-@dataclass
-class OBVMADSetting:
-    fast: int = 12
-    slow: int = 26
-
-
-class OBVMAD(FactorInterface):
-    def __init__(self, setting: OBVMADSetting):
-        self.setting = setting
-        super().__init__(id=f"OBVMAD_f{self.setting.fast}_s{self.setting.slow}")
+class OBV(FactorInterface):
+    def __init__(self):
+        super().__init__(id="OBV")
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         obv = ta.obv(df["close"], df["volume"])
-
-        obv_fema = ta.ema(obv, length=self.setting.fast)
-        obv_sema = ta.ema(obv, length=self.setting.slow)
-
-        mad = ((obv_fema - obv_sema) / obv_sema) * 100
-
-        assert self.stationary(mad), "OBVMAD is not stationary"
-
-        df[self.id()] = mad
+        df[self.id()] = obv
         return df

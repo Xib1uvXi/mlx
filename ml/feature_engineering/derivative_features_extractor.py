@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tsfresh.utilities.dataframe_functions import roll_time_series
-from tsfresh import extract_features, select_features
+from tsfresh import extract_features, select_features, extract_relevant_features
 from tsfresh.utilities.dataframe_functions import impute
 import pandas as pd
 
